@@ -31,10 +31,12 @@ function App() {
   return (
     <BrowserRouter>
     {console.log(users)}
-      {/* 하나로 합쳐진 헤더바 (loginMode와 setOpen 전달) */}
+      
+      {/* ⭕ 각각의 이름에 맞게 제대로 매칭해서 전달해 줍니다 */}
       <HeaderBar 
         loginMode={loginMode} 
-        setLoginMode={setOpen} 
+        setLoginMode={setLoginMode} 
+        setOpen={setOpen} 
       />
 
       <SiderBar open={open} />

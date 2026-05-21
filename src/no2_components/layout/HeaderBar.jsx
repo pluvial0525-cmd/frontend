@@ -1,24 +1,27 @@
-import React from 'react'
+import React, { useState } from 'react' // [방법 2 사용 시 필요]
 import styled from 'styled-components'
 import { useNavigate } from 'react-router-dom'
 
-const HeaderBar = ({ loginMode, setLoginMode}) => {
+// 1. props에 setOpen을 추가하여 부모로부터 함수를 받아옵니다.
+const HeaderBar = ({ loginMode, setLoginMode, setOpen }) => {
   const navigate = useNavigate();
   
+  // [방법 2]: 만약 부모에게서 안 받고 여기서 직접 상태를 관리한다면 아래 주석을 해제하세요.
+  // const [open, setOpen] = useState(false); 
+  
   const handleLogout = () => {
-     
       setLoginMode({
         isLogin: false,
         username: ""
       });
       alert("로그아웃 되었습니다.");
       navigate("/login"); 
-    
   };
 
   return (
     <Container>
       <LeftSection>
+        {/* 이제 setOpen이 안전하게 정의되어 있어 에러가 나지 않습니다 */}
         <HamburgerButton onClick={() => setOpen?.(prev => !prev)}>
           ☰
         </HamburgerButton>

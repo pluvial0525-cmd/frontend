@@ -1,27 +1,23 @@
 import React from 'react'
 
-const EmployeeTable = ({infos}) => {
+const EmployeeTable = ({state}) => {
+    const {emp} = state;
+
   return (
-    <div> 
+    <> 
         <table>
             <tr>
-                {Object.keys(infos[0]).map(key=>(
+                {emp && Object.keys(emp).map(key=>(
                     <th>{key}</th>
                 ))}
-                
             </tr>
-            {infos.map(item=>(
-                <tr>
-                    {Object.values(item).map(values=>(
-                        <td>{values}</td>
-                    ))}
-                </tr>
-            ))}
-
-                
-            
+            <tr>
+                {emp && Object.values(emp).map(value=>(
+                    <td>{value}</td>
+                ))}
+            </tr>
         </table>
-    </div>
+    </>
   )
 }
 
