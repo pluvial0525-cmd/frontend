@@ -1,12 +1,15 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components'; // styled 임포트 확인
+import { UserContext } from '../../no0_context/UserContext';
 
 const initialState = {
     username: "", password: ""
 }
 
-const LoginForm = ({ users, setLoginMode }) => {
+const LoginForm = () => {
+    const {dispatch} = useContext(UserContext);
+
     const [user, setUser] = useState(initialState);
     const navigate = useNavigate();
 
@@ -19,21 +22,17 @@ const LoginForm = ({ users, setLoginMode }) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        
-        // 부모(App.jsx)에서 넘겨받은 users 배열이 없거나 비어있을 때를 대비한 안전장치
         const userList = users || [];
         
         const loginUser = userList.filter(item => (
-            item.username === user.username && item.password === user.password
+            item.username === user.username && 
+            item.password === user.password
         ))[0]
 
         if (loginUser) {
             alert("로그인 성공!");
-            setLoginMode(prev => ({
-                ...prev, 
-                isLogin: true, 
-                username: loginUser.username
-            }))
+            dispatch({type:"login", payload: loginUser})
+
             navigate("/")
         } else {
             alert("사용자 정보가 올바르지 않습니다.");

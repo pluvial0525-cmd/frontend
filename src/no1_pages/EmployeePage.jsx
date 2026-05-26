@@ -1,186 +1,217 @@
-import React, { useEffect, useState } from 'react'
+// EmployeePage.jsx
+
+import React, { useContext, useEffect } from 'react'
+import styled from 'styled-components';
+
 import EmployeeList from '../no2_components/employee/EmployeeList'
 import EmployeeTable from '../no2_components/employee/EmployeeTable'
 import EmployeeRegister from '../no2_components/employee/EmployeeRegister'
 import EmployeeUpdate from '../no2_components/employee/EmployeeUpdate'
-
-const initialEmps = [
-    {id: "1", name: "John", email: "john@example.com", job: "frontend", pay: 600},
-    {id: "2", name: "Peter", email: "peter@example.com", job: "backend", pay: 600},
-    {id: "3", name: "Susan", email: "susan@example.com", job: "db", pay: 600},
-    {id: "4", name: "Sue", email: "sue@example.com", job: "ai", pay: 600},
-]
-
-const initialEmp = {
-  id: '', name: '', email: '', job: '', pay:''
-}
-
-const initalState = {
-  empTable: initialEmps,
-  emp: initialEmp,
-  mode: '',
-  selectedId: ""
-}
+import { EmployeeContext } from '../no0_context/EmployeeContext';
 
 const EmployeePage = () => {
-  const [state, setState] = useState(initalState);
-  const {empTable, emp, selectedId, mode} = state;
+  const { state, dispatch } = useContext(EmployeeContext);
+  const { selectedId, empTable, emp, mode } = state;
 
-  useEffect(()=>{
-    selectedId &&
-    setState(prev => (
-      {
-        ...prev, 
-        emp:empTable.find(item => item.id === selectedId)
-      }
-    ))
-  }, [selectedId, empTable])
+  // 💡 필터(filter) 함수 형식을 그대로 유지하고 화살표(=>) 오타만 수정했습니다.
+  useEffect(() => {
+    if (selectedId) {
+      dispatch({
+        type: "set_emp", 
+        payload: empTable.filter(item => item.id === selectedId)[0]
+      });
+    }
+  }, [selectedId, empTable, dispatch]);
 
-  const handleDelete =()=>{
-
-    if(!selectedId) {
+  const handleDelete = () => {
+    if (!selectedId) {
       alert("삭제할 데이터를 선택하세요");
       return;
     }
-    setState(prev => (
-      {
-        ...prev,
-        empTable: prev.empTable.filter(item => item.id !== selectedId),
-        emp: initialEmp,
-        selectedId: ""
-      }
-    ))
-  }
+    dispatch({ type: "delete" });
+    dispatch({ type: "mode", payload: "" });
+  };
+
   return (
-  
-  <div
-    style={{
-      width: '90%',
-      maxWidth: '1100px',
-      margin: '40px auto',
-      padding: '30px',
-      borderRadius: '20px',
-      backgroundColor: '#f8f9fc',
-      boxShadow: '0 4px 15px rgba(0,0,0,0.08)'
-    }}
-  >
-    {console.log(state.empTable)}
+    <Container>
 
-    <h1
-      style={{
-        fontSize: '28px',
-        fontWeight: 'bold',
-        marginBottom: '25px',
-        color: '#222'
-      }}
-    >
-      Employee Management
-    </h1>
+      <Title>
+        고용인 정보
+      </Title>
 
-    <EmployeeList state={state} setState={setState}/>
+      <Content>
 
-    <div
-      style={{
-        marginTop: '25px',
-        overflowX: 'auto'
-      }}
-    >
-      <EmployeeTable state={state}/>
-    </div>
+        <LeftSection>
 
-    <div
-      style={{
-        display: 'flex',
-        gap: '12px',
-        marginTop: '20px'
-      }}
-    >
-      <button
-        onClick={()=>setState(prev=>({...prev, mode:"register"}))}
-        style={{
-          padding: '10px 18px',
-          border: 'none',
-          borderRadius: '10px',
-          backgroundColor: '#4f46e5',
-          color: 'white',
-          cursor: 'pointer',
-          fontSize: '15px'
-        }}
-      >
-        등록
-      </button>
+          <Card>
+            <SectionTitle>
+              직원 목록
+            </SectionTitle>
 
-      <button
-        onClick={()=>setState(prev=>({...prev, mode:"update"}))}
-        style={{
-          padding: '10px 18px',
-          border: 'none',
-          borderRadius: '10px',
-          backgroundColor: '#2563eb',
-          color: 'white',
-          cursor: 'pointer',
-          fontSize: '15px'
-        }}
-      >
-        수정
-      </button>
+            <EmployeeList />
+          </Card>
 
-      <button
-        onClick={()=>setState(prev=>({...prev, mode:"delete"}))}
-        style={{
-          padding: '10px 18px',
-          border: 'none',
-          borderRadius: '10px',
-          backgroundColor: '#dc2626',
-          color: 'white',
-          cursor: 'pointer',
-          fontSize: '15px'
-        }}
-      >
-        삭제
-      </button>
-    </div>
+        </LeftSection>
 
-    <div
-      style={{
-        marginTop: '25px',
-        padding: '20px',
-        borderRadius: '15px',
-        backgroundColor: 'white',
-        boxShadow: '0 2px 10px rgba(0,0,0,0.05)'
-      }}
-    >
-      {
-        mode === "register" ? 
-        <EmployeeRegister setState={setState}/>
+        <RightSection>
 
-        : mode === "update" ? 
+          <Card>
+            <SectionTitle>
+              직원 정보
+            </SectionTitle>
 
-        <EmployeeUpdate emp={emp} setState={setState}/>
+            <EmployeeTable />
+          </Card>
 
-        : mode === "delete" ? 
+          <Card>
 
-        <button
-          onClick={handleDelete}
-          style={{
-            width: '100%',
-            padding: '12px',
-            border: 'none',
-            borderRadius: '10px',
-            backgroundColor: '#dc2626',
-            color: 'white',
-            cursor: 'pointer',
-            fontSize: '15px'
-          }}
-        >
-          위 데이터를 삭제하시겠습니까?
-        </button>
+            <ButtonGroup>
+              <ActionButton
+                onClick={() => dispatch({ type: "mode", payload: "register" })}
+              >
+                등록
+              </ActionButton>
 
-        : null
-      }
-    </div>
-  </div>
-)
+              <ActionButton
+                onClick={() => dispatch({ type: "mode", payload: "update" })}
+              >
+                수정
+              </ActionButton>
+
+              <DeleteButton
+                onClick={() => dispatch({ type: "mode", payload: "delete" })}
+              >
+                삭제
+              </DeleteButton>
+            </ButtonGroup>
+
+            {
+              mode === "register" ?
+
+                <EmployeeRegister />
+                :
+
+                mode === "update" ?
+
+                  <EmployeeUpdate
+                    emp={emp} />
+                  :
+                  mode === "delete" ?
+
+                    <DeleteBox>
+                      <p>위 데이터를 삭제하시겠습니까?</p>
+
+                      <DeleteConfirmButton
+                        onClick={handleDelete}
+                      >
+                        삭제 확인
+                      </DeleteConfirmButton>
+                    </DeleteBox>
+                    :
+                    null
+            }
+
+          </Card>
+
+        </RightSection>
+
+      </Content>
+
+    </Container>
+  )
 }
 
 export default EmployeePage
+
+
+// --- Styled Components 영역 ---
+
+const Container = styled.div`
+  width: 100%;
+  min-height: 100vh;
+  padding: 32px;
+  background: #f1f5f9;
+`
+
+const Title = styled.h1`
+  font-size: 32px;
+  margin-bottom: 24px;
+  color: #0f172a;
+`
+
+const Content = styled.div`
+  display: flex;
+  gap: 24px;
+
+  @media (max-width: 900px){
+    flex-direction: column;
+  }
+`
+
+const LeftSection = styled.div`
+  width: 280px;
+
+  @media (max-width: 900px){
+    width: 100%;
+  }
+`
+
+const RightSection = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+`
+
+const Card = styled.div`
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+`
+
+const SectionTitle = styled.h2`
+  margin-bottom: 20px;
+  color: #1e293b;
+`
+
+const ButtonGroup = styled.div`
+  display: flex;
+  gap: 12px;
+  margin-bottom: 24px;
+`
+
+const ActionButton = styled.button`
+  border: none;
+  background: #3b82f6;
+  color: white;
+  padding: 12px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: bold;
+  transition: 0.2s;
+
+  &:hover{
+    opacity: 0.85;
+  }
+`
+
+const DeleteButton = styled(ActionButton)`
+  background: #ef4444;
+`
+
+const DeleteBox = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+`
+
+const DeleteConfirmButton = styled.button`
+  width: 160px;
+  border: none;
+  background: #dc2626;
+  color: white;
+  padding: 12px;
+  border-radius: 10px;
+  cursor: pointer;
+`

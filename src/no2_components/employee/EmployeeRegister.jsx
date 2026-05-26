@@ -1,5 +1,6 @@
-import React, { useState } from 'react'
+import React, { useContext, useState } from 'react'
 import { Form } from 'react-router-dom'
+import { EmployeeContext } from '../../no0_context/EmployeeContext'
 
 const initialEmps = [
     {id: "1", name: "John", email: "john@example.com", job: "frontend", pay: 600},
@@ -13,46 +14,30 @@ const initialEmp = {
 }
 const initialstate = {
     empTable: initialEmps,
-    emp: initialEmp
+    emp: initialEmp,
+    mode: '',
+    selectedID: ""
 }
 
-const reducer = (state, action)=> {
-    switch(action.type){
-        case "change":
-            const {name, value} = event.target;
-            return
-                {
-                    ...state,
-                    emp: {...state.emp, [name]: value}
-                }
-    }
-} 
 
-const EmployeeRegister = ({setState}) => {
-    const [emp, setEmp] = useState(initialEmp);
+
+const EmployeeRegister = ({}) => {
+  const {dispatch} = useContext(EmployeeContext)
+
+  const [emp, setEmp] = useState(initialEmp);
     
-    const handleChange = (event)=>{
-        const {name, value} = event.target;
-        setEmp(prev => (
+  const handleChange = (event)=>{
+    const {name, value} = event.target;
+      setEmp(prev => (
             {...prev, [name]: value}
         ))
     }
-    const handleSubmit = (event)=>{
-        event.preventDefault();
-        emp &&
-        setState(prev => (
-            {
-                ...prev,
-                empTable: [
-                    ...prev.empTable,
-                    {...emp, id: Date.now()}
-                ]
-            }
-        ))
-        setState(prev=>({
-            ...prev,
-            selectedID: prev.empTable[prev.empTable.length-1].id
-        }))
+  const handleSubmit = (event)=>{
+    event.preventDefault();
+      const newId = Date.now().toString();
+
+        dispatch({type: "register", payload: {newId, emp}})
+
         setEmp(initialEmp)
     }
   return (

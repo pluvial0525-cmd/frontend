@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { Form } from 'react-router-dom'
+import { EmployeeContext } from '../../no0_context/EmployeeContext'
 
 const initialEmp = {
     id: '', name: '', email: '', job: '', pay: ''
 }
 
-const EmployeeUpdate = ({emp, setState}) => {
-    const [newEmp, setNewEmp] = useState(emp);
+const EmployeeUpdate = () => {
+  const {state, dispatch} = useContext(EmployeeContext)
+  const {emp} = state;
+  const [newEmp, setNewEmp] = useState(emp);
 
-    useEffect(()=> {
-        emp &&
-        setNewEmp(emp)
-    }, [emp])
+  useEffect(()=> {
+    emp &&
+    setNewEmp(emp)
+  }, [emp])
 
     const handleChange = (event)=>{
         const {name, value} = event.target;
@@ -21,17 +24,8 @@ const EmployeeUpdate = ({emp, setState}) => {
     }
     const handleSubmit = (event)=>{
         event.preventDefault();
-        setState(prev=> (
-            {
-                ...prev,
-                empTable: prev.empTable.map(item => 
-                    (
-                       item.id === emp.id ? 
-                       newEmp : item 
-                    )
-                )
-            }
-        ))
+        
+        dispatch({type: "update", payload: newEmp})
     }
   return (
   <>

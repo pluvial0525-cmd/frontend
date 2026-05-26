@@ -1,15 +1,15 @@
-import React from 'react'
+import React, { useContext } from 'react'
+import { EmployeeContext } from '../../no0_context/EmployeeContext'
 
-const EmployeeList = ({state, setState}) => {
+const EmployeeList = () => {
+    const {state, dispatch} = useContext(EmployeeContext)
     const {empTable, selectedId} = state;
-
     const handleClick = (id) => {
-        setState(prev => (
-            {...prev, selectedId: id}
-        ))
+        dispatch({type: "select", payload: id})
     }
 
     return (
+
         <div
             style={{
                 display: 'flex',
@@ -19,7 +19,7 @@ const EmployeeList = ({state, setState}) => {
             }}
         >
             {
-                empTable.map(item => (
+                empTable?.map(item => (
                     <button
                         key={item.id}
                         onClick={() => handleClick(item.id)}

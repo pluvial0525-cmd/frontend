@@ -1,3 +1,4 @@
+// App.jsx
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import styled from 'styled-components'
 import { useState } from 'react'
@@ -8,81 +9,62 @@ import EmployeePage from './no1_pages/EmployeePage'
 
 import HeaderBar from './no2_components/layout/HeaderBar'
 import SiderBar from './no2_components/layout/SiderBar'
-import LoginForm from './no2_components/user/LoginForm'
 import LoginPage from './no1_pages/user/LoginPage'
-import RegisterForm from './no2_components/user/RegisterForm' 
+import RegisterPage from './no1_pages/user/RegisterPage'
 
-const initalState = [
-  {id: 1, username: "john", password: "1111"},
-  {id: 2, username: "peter", password: "1111"},
-  {id: 3, username: "susan", password: "1111"},
-  {id: 4, username: "sue", password: "1111"},
-]
-const initalMode = {
-  isLogin: false,
-  username: ""
-}
+import EmployeeProvider from './no0_context/EmployeeContext'
+import UserProvider from './no0_context/UserContext'
 
 function App() {
-  const [users, setUsers] = useState(initalState);
-  const [loginMode, setLoginMode] = useState(initalMode);
-  const [open, setOpen] = useState(false)
+  // 💡 수정 1: 주석을 풀고 사이드바 열림 상태를 정상적으로 선언합니다.
+  const [open, setOpen] = useState(false);
 
   return (
     <BrowserRouter>
-    {console.log(users)}
-      
-      {/* ⭕ 각각의 이름에 맞게 제대로 매칭해서 전달해 줍니다 */}
-      <HeaderBar 
-        loginMode={loginMode} 
-        setLoginMode={setLoginMode} 
-        setOpen={setOpen} 
-      />
+      {/* 💡 수정 2: 모든 컴포넌트(Header, Sidebar, Pages)가 전역 상태를 공유할 수 있도록 
+          Provider들을 최상단에 올바른 짝으로 감싸줍니다. */}
+      <UserProvider>
+        <EmployeeProvider>
+          
+          {/* HeaderBar에서 사이드바를 열고 닫을 수 있게 setOpen을 전달합니다. */}
+          <HeaderBar setOpen={setOpen} />
+          
+          {/* 현재 열림 상태를 사이드바에 전달합니다. */}
+          <SiderBar open={open} />
 
-      <SiderBar open={open} />
+          {/* 본문 콘텐츠 영역 */}
+          <Content
+            open={open}
+            onClick={() => {
+              if (open) {
+                setOpen(false)
+              }
+            }}
+          >
+            {/* 💡 수정 3: Routes 바로 아래에는 오직 Route만 깔끔하게 오도록 태그 꼬임 문제를 완벽히 해결했습니다. */}
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/todo" element={<TodoPage />} />
+              <Route path="/employee" element={<EmployeePage />} />
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/register" element={<RegisterPage />} />
+            </Routes>
+          </Content>
 
-      {/* 본문 콘텐츠 영역 */}
-      <Content
-        open={open}
-        onClick={() => {
-          if (open) {
-            setOpen(false)
-          }
-        }}
-      >
-        <Routes>
-          <Route path="/login" element={
-            <LoginPage
-              users={users} 
-              setLoginMode={setLoginMode}
-            />
-          }/>
-        
-          <Route path="/register" element={
-            <RegisterForm setUsers={setUsers} />
-          }/>
-
-          <Route path="/" element={<HomePage />} />
-          <Route path="/todo" element={<TodoPage />} />
-          <Route path="/employee" element={<EmployeePage />} />
-        </Routes>
-      </Content>
+        </EmployeeProvider>
+      </UserProvider>
     </BrowserRouter>
   )
 }
 
-export default App
+export default App;
 
 /* styled-components */
-const Layout = styled.div`
-  min-height: 100vh;
-`
-
 const Content = styled.div`
   min-height: calc(100vh - 70px);
   background-color: #f3f4f6;
   
-  /* 🌟 기본 패딩 20px + 헤더 고정 높이 70px = 총 90px 주어 짤림 현상 해결 */
+  /* 기본 패딩 20px + 헤더 고정 높이 70px = 총 90px 주어 짤림 현상 해결 */
   padding: 90px 20px 20px 20px;
 
   /* 사이드바 열림에 따른 여백 조절 */
