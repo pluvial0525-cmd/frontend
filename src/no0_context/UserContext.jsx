@@ -12,7 +12,7 @@ const initialUsers = [
 const initialState = {
   users: initialUsers,
   username: '',
-  isLogin: false // 💡 대문자 L 확인
+  isLogin: false 
 }
 
 const reducer = (state, action) => {
@@ -20,26 +20,19 @@ const reducer = (state, action) => {
     case "login":
       return {
         ...state,
-        isLogin: true, // 💡 오타 수정: islogin -> isLogin
-        username: action.payload
+        username: action.payload.username,
+        isLogin: true
       }
     case "register":
       return {
         ...state,
-        users: [
-          ...state.users,
-          {
-            id: action.payload.id,
-            username: action.payload.username,
-            password: action.payload.password
-          }
-        ]
+        users: [...state.users, action.payload]
       }
     case "logout":
       return {
         ...state,
-        isLogin: false, // 💡 오타 및 로직 수정: 로그아웃 시 로그인 상태를 false로!
-        username: ''    // 💡 오타 수정: usename -> username 변경 및 이름 비우기
+        isLogin: false, 
+        username: ""
       }
     default:
       return state;

@@ -8,9 +8,7 @@ import { UserContext } from '../../no0_context/UserContext';
 const HeaderBar = ({ setOpen }) => {
   const navigate = useNavigate();
   
-  // 💡 핵심 수정: UserContext에서 state와 dispatch를 꺼내옵니다.
   const { state, dispatch } = useContext(UserContext);
-  // state 안에 들어있는 이쁘게 고쳐둔 'isLogin'과 'username'을 구조분해 할당합니다.
   const { isLogin, username } = state;
 
   const handleLogout = () => {
@@ -22,11 +20,9 @@ const HeaderBar = ({ setOpen }) => {
 
   return (
     <HeaderContainer>
-      {/* 사이드바 토글 버튼 */}
       <MenuButton onClick={() => setOpen(prev => !prev)}>
         ☰
       </MenuButton>
-
       <Logo onClick={() => navigate("/")}>
         🚀 MyDashboard
       </Logo>

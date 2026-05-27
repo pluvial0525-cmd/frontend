@@ -3,36 +3,50 @@ import { useNavigate } from 'react-router-dom'
 import styled from 'styled-components';
 import { UserContext } from '../../no0_context/UserContext';
 
-const initialState = {
-  id: "", username: "", password: "", confirmPassword: ""
+const initialFormState = {
+  username: "", 
+  password: "", 
+  confirmPassword: ""
 }
 
 const RegisterForm = () => {
-  const {dispatch} = useContext(UserContext);
-  const [user, setUserInput] = useState(initialState);
+  const { dispatch } = useContext(UserContext);
+  const [signUpData, setSignUpData] = useState(initialFormState);
   const navigate = useNavigate();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setUserInput(prev => ({
+    setSignUpData(prev => ({
       ...prev, [name]: value
     }))
   }
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    if (user.password !== user.confirmPassword) {
+    
+    // 1. 공백 차단 검증
+    if (!signUpData.username.trim() || !signUpData.password.trim()) {
+      alert("사용자 이름과 비밀번호를 입력해주세요.");
+      return;
+    }
+
+    // 2. 비밀번호 확인 일치 검증
+    if (signUpData.password !== signUpData.confirmPassword) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
 
-   dispatchEvent({type: "register", payload: {
-    id: Date.now(), 
-    user
-  }})
+    // 3. 안전한 단층 구조 데이터 패키징 송신
+    const newUser = {
+      id: Date.now(),
+      username: signUpData.username.trim(),
+      password: signUpData.password.trim()
+    };
+
+    dispatch({ type: "register", payload: newUser });
     
     alert("회원가입이 완료되었습니다!");
-    setUserInput(initialState);
+    setSignUpData(initialFormState);
     navigate("/login"); 
   }
 
@@ -45,7 +59,7 @@ const RegisterForm = () => {
           <Input
             type="text"
             name="username"
-            value={user.username}
+            value={signUpData.username}
             onChange={handleChange}
             placeholder='사용자 이름'
             required
@@ -53,7 +67,7 @@ const RegisterForm = () => {
           <Input
             type="password"
             name="password"
-            value={user.password}
+            value={signUpData.password}
             onChange={handleChange}
             placeholder='비밀번호'
             required
@@ -61,7 +75,7 @@ const RegisterForm = () => {
           <Input
             type="password"
             name="confirmPassword"
-            value={user.confirmPassword}
+            value={signUpData.confirmPassword}
             onChange={handleChange}
             placeholder='비밀번호 확인'
             required
@@ -84,7 +98,6 @@ const RegisterForm = () => {
 export default RegisterForm;
 
 /* ✨ Styled Components */
-
 const FormContainer = styled.form`
     width: 100%;
     height: 100vh;
@@ -93,7 +106,6 @@ const FormContainer = styled.form`
     align-items: center;
     background: #f8fafc; 
 `
-
 const Card = styled.div`
     width: 420px;
     background: white;
@@ -104,7 +116,6 @@ const Card = styled.div`
     flex-direction: column;
     border: 1px solid #f1f5f9;
 `
-
 const Title = styled.h2`
     text-align: center;
     margin-bottom: 36px;
@@ -113,14 +124,12 @@ const Title = styled.h2`
     font-weight: 700;
     letter-spacing: -0.5px;
 `
-
 const InputGroup = styled.div`
     display: flex;
     flex-direction: column;
     gap: 16px; 
     margin-bottom: 28px;
 `
-
 const Input = styled.input`
     width: 100%;
     padding: 14px 16px; 
@@ -130,24 +139,18 @@ const Input = styled.input`
     outline: none;
     background-color: #f8fafc;
     transition: all 0.2s ease-in-out;
-
-    &::placeholder {
-        color: #94a3b8;
-    }
-
+    &::placeholder { color: #94a3b8; }
     &:focus {
         background-color: #ffffff;
         border-color: #2563eb;
         box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12); 
     }
 `
-
 const ButtonGroup = styled.div`
     display: flex;
     flex-direction: column;
     gap: 12px;
 `
-
 const BaseButton = styled.button`
     width: 100%; 
     border: none;
@@ -158,27 +161,20 @@ const BaseButton = styled.button`
     cursor: pointer;
     transition: all 0.2s ease-in-out;
 `
-
 const RegisterButton = styled(BaseButton)`
     background: #2563eb; 
     color: #ffffff; 
-
     &:hover {
         background: #1d4ed8;
         transform: translateY(-1px);
     }
-    
-    &:active {
-        transform: translateY(0);
-    }
+    &:active { transform: translateY(0); }
 `
-
 const CancelButton = styled(BaseButton)`
     background: transparent;
     color: #64748b; 
     font-size: 14px;
     font-weight: 500;
-
     &:hover {
         color: #2563eb;
         background: #f1f5f9;
