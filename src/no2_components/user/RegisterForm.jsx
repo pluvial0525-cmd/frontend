@@ -1,182 +1,259 @@
 import React, { useContext, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 import { UserContext } from '../../no0_context/UserContext';
+import { useDispatch } from 'react-redux';
+import { register } from '../../no3_store/slices/userSlice';
 
-const initialFormState = {
-  username: "", 
-  password: "", 
+const initialState = {
+  id: "",
+  username: "",
+  password: "",
   confirmPassword: ""
 }
 
 const RegisterForm = () => {
-  const { dispatch } = useContext(UserContext);
-  const [signUpData, setSignUpData] = useState(initialFormState);
+  const dispatch = useDispatch();
+
+  const [user, setUser] = useState(initialState);
   const navigate = useNavigate();
 
   const handleChange = (event) => {
     const { name, value } = event.target;
-    setSignUpData(prev => ({
-      ...prev, [name]: value
+    setUser(prev => ({
+      ...prev,
+      [name]: value
     }))
   }
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    
-    // 1. 공백 차단 검증
-    if (!signUpData.username.trim() || !signUpData.password.trim()) {
-      alert("사용자 이름과 비밀번호를 입력해주세요.");
-      return;
-    }
-
-    // 2. 비밀번호 확인 일치 검증
-    if (signUpData.password !== signUpData.confirmPassword) {
+    if (user.password !== user.confirmPassword) {
       alert("비밀번호가 일치하지 않습니다.");
       return;
     }
-
-    // 3. 안전한 단층 구조 데이터 패키징 송신
-    const newUser = {
-      id: Date.now(),
-      username: signUpData.username.trim(),
-      password: signUpData.password.trim()
-    };
-
-    dispatch({ type: "register", payload: newUser });
-    
-    alert("회원가입이 완료되었습니다!");
-    setSignUpData(initialFormState);
-    navigate("/login"); 
+    dispatch(register({id: Date.now(), user}))
+    alert("회원가입 성공")
+    navigate("/login")
   }
 
   return (
-    <FormContainer onSubmit={handleSubmit}>
-      <Card>
-        <Title>회원등록</Title>
-        
+    <Container>
+
+      <Form onSubmit={handleSubmit}>
+
+        <Logo>MySystem</Logo>
+
+        <Title>회원가입</Title>
+
+        <Description>
+          새로운 계정을 생성하세요.
+        </Description>
+
         <InputGroup>
+          <Label>아이디</Label>
+
           <Input
             type="text"
             name="username"
-            value={signUpData.username}
+            value={user.username}
             onChange={handleChange}
-            placeholder='사용자 이름'
-            required
+            placeholder="아이디 입력"
           />
+        </InputGroup>
+
+        <InputGroup>
+          <Label>비밀번호</Label>
+
           <Input
             type="password"
             name="password"
-            value={signUpData.password}
+            value={user.password}
             onChange={handleChange}
-            placeholder='비밀번호'
-            required
+            placeholder="비밀번호 입력"
           />
+        </InputGroup>
+
+        <InputGroup>
+          <Label>비밀번호 확인</Label>
+
           <Input
             type="password"
             name="confirmPassword"
-            value={signUpData.confirmPassword}
+            value={user.confirmPassword}
             onChange={handleChange}
-            placeholder='비밀번호 확인'
-            required
+            placeholder="비밀번호 다시 입력"
           />
         </InputGroup>
-        
-        <ButtonGroup>
-          <RegisterButton type="submit">
-            가입하기
-          </RegisterButton>
-          <CancelButton type="button" onClick={() => navigate("/login")}>
-            이미 계정이 있으신가요? 로그인
-          </CancelButton>
-        </ButtonGroup>
-      </Card>
-    </FormContainer>
+
+        <RegisterButton>
+          회원가입
+        </RegisterButton>
+
+        <Divider />
+
+        <LoginButton
+          type="button"
+          onClick={() => navigate("/login")}
+        >
+          이미 회원이신가요? 로그인
+        </LoginButton>
+
+      </Form>
+
+    </Container>
   )
 }
 
 export default RegisterForm;
 
-/* ✨ Styled Components */
-const FormContainer = styled.form`
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #f8fafc; 
+
+const Container = styled.div`
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  padding: 20px;
+
+  background: linear-gradient(
+    135deg,
+    #e0f2fe,
+    #f8fafc,
+    #dbeafe
+  );
 `
-const Card = styled.div`
-    width: 420px;
-    background: white;
-    padding: 48px 40px;
-    border-radius: 20px; 
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #f1f5f9;
+
+const Form = styled.form`
+  width: 100%;
+  max-width: 420px;
+
+  background: white;
+
+  padding: 48px 40px;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.08),
+    0 4px 10px rgba(0,0,0,0.04);
+
+  display: flex;
+  flex-direction: column;
 `
+
+const Logo = styled.div`
+  text-align: center;
+
+  font-size: 30px;
+  font-weight: 800;
+
+  color: #2563eb;
+
+  margin-bottom: 12px;
+`
+
 const Title = styled.h2`
-    text-align: center;
-    margin-bottom: 36px;
-    color: #0f172a; 
-    font-size: 30px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
+  text-align: center;
+
+  font-size: 28px;
+
+  color: #0f172a;
+
+  margin-bottom: 10px;
 `
+
+const Description = styled.p`
+  text-align: center;
+
+  color: #64748b;
+  font-size: 15px;
+
+  margin-bottom: 32px;
+`
+
 const InputGroup = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 16px; 
-    margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+
+  margin-bottom: 20px;
 `
+
+const Label = styled.label`
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #334155;
+
+  margin-bottom: 8px;
+`
+
 const Input = styled.input`
-    width: 100%;
-    padding: 14px 16px; 
-    border: 1px solid #cbd5e1; 
-    border-radius: 12px; 
-    font-size: 15px;
-    outline: none;
-    background-color: #f8fafc;
-    transition: all 0.2s ease-in-out;
-    &::placeholder { color: #94a3b8; }
-    &:focus {
-        background-color: #ffffff;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12); 
-    }
+  width: 100%;
+
+  padding: 14px 16px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+
+  font-size: 15px;
+
+  outline: none;
+
+  transition: 0.2s;
+
+  &:focus{
+    border-color: #3b82f6;
+
+    box-shadow:
+      0 0 0 4px rgba(59,130,246,0.15);
+  }
 `
-const ButtonGroup = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-`
+
 const BaseButton = styled.button`
-    width: 100%; 
-    border: none;
-    padding: 14px;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 600; 
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
+  width: 100%;
+
+  border: none;
+  border-radius: 12px;
+
+  padding: 14px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
 `
+
 const RegisterButton = styled(BaseButton)`
-    background: #2563eb; 
-    color: #ffffff; 
-    &:hover {
-        background: #1d4ed8;
-        transform: translateY(-1px);
-    }
-    &:active { transform: translateY(0); }
+  background: #2563eb;
+  color: white;
+
+  margin-top: 8px;
+
+  &:hover{
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
 `
-const CancelButton = styled(BaseButton)`
-    background: transparent;
-    color: #64748b; 
-    font-size: 14px;
-    font-weight: 500;
-    &:hover {
-        color: #2563eb;
-        background: #f1f5f9;
-    }
+
+const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+
+  background: #e2e8f0;
+
+  margin: 24px 0;
+`
+
+const LoginButton = styled(BaseButton)`
+  background: #eff6ff;
+  color: #2563eb;
+
+  &:hover{
+    background: #dbeafe;
+  }
 `

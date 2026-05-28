@@ -1,65 +1,82 @@
-import React, { useState, useContext } from 'react';
-import styled from 'styled-components';
-import { TodoContext } from '../../no0_context/TodoContext';
+// TodoInsert.jsx
+
+import React from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components'
+// import { TodoContext } from '../../no0_context/TodoContext'
+import { change, register } from '../../no3_store/slices/todoSlice';
 
 const TodoInsert = () => {
-  const { dispatch } = useContext(TodoContext);
-  const [text, setText] = useState('');
-
+  const {todoObj} = useSelector(state=>state.todo);
+  const dispatch = useDispatch();
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    dispatch(change({name, value}))
+  }
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!text.trim()) return;
-
-    // 💡 1. 요청하신 대로 액션 타입을 'register'로 변경하여 한 줄 매핑했습니다!
-    dispatch({ type: 'register', payload: { id: Date.now(), subject: text.trim(), checked: false } });
-
-    setText('');
-  };
-
+    e.preventDefault()
+    dispatch(register())
+  }
   return (
     <Form onSubmit={handleSubmit}>
-      <Input 
-        type="text" 
-        value={text}
-        onChange={(e) => setText(e.target.value)}
-        placeholder="오늘의 할 일을 입력하세요..." 
+      <Input
+        type="text"
+        name="subject"
+        value={todoObj.subject}
+        onChange={handleChange}
+        required
+        placeholder='할 일을 입력하세요'
       />
-      {/* 💡 2. 맨 밑에 선언된 이름인 <Button>과 일치하도록 태그명을 수정했습니다! */}
-      <Button type="submit">등록</Button>
+      <Button>
+        입력
+      </Button>
     </Form>
-  );
-};
+  )
+}
 
-export default TodoInsert;
+export default TodoInsert
 
-/* 💅 스타일드 컴포넌트 (원래 적어주신 디자인 스타일 100% 그대로 유지) */
 const Form = styled.form`
   display: flex;
+
   gap: 10px;
 `
 
 const Input = styled.input`
   flex: 1;
-  padding: 12px;
-  border: 1px solid #ddd;
-  border-radius: 10px;
+
+  padding: 14px;
+
+  border: 1px solid #d1d5db;
+  border-radius: 12px;
+
+  font-size: 16px;
+
   outline: none;
-  font-size: 15px;
-  &:focus {
-    border-color: #4f46e5;
+
+  &:focus{
+    border-color: #3b82f6;
   }
 `
 
 const Button = styled.button`
+  padding: 14px 24px;
+
   border: none;
-  background: #4f46e5;
+  border-radius: 12px;
+
+  background: #3b82f6;
+
   color: white;
-  padding: 0 18px;
-  border-radius: 10px;
+
+  font-size: 16px;
   font-weight: bold;
+
   cursor: pointer;
+
   transition: 0.2s;
-  &:hover {
-    background: #4338ca;
+
+  &:hover{
+    background: #2563eb;
   }
 `

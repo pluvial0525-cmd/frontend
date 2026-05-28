@@ -1,189 +1,135 @@
-import React, { useContext, useEffect, useState } from 'react'
-import { Form } from 'react-router-dom'
-import { EmployeeContext } from '../../no0_context/EmployeeContext'
+// EmployeeUpdate.jsx
 
-const initialEmp = {
-    id: '', name: '', email: '', job: '', pay: ''
-}
+import React, { useEffect, useState, useContext } from 'react'
+import { useDispatch, useSelector } from 'react-redux';
+import styled from 'styled-components';
+import { update } from '../../no3_store/slices/employeeSlice';
+// import { EmployeeContext } from '../../no0_context/EmployeeContext';
 
 const EmployeeUpdate = () => {
-  const {state, dispatch} = useContext(EmployeeContext)
-  const {emp} = state;
-  const [newEmp, setNewEmp] = useState(emp);
-
-  useEffect(()=> {
-    emp &&
-    setNewEmp(emp)
-  }, [emp])
-
-    const handleChange = (event)=>{
+    const {emp} = useSelector(state=>state.emp);
+    const dispatch = useDispatch();
+    const [newEmp, setNewEmp] = useState(emp);
+    useEffect(() => {
+        emp &&
+        setNewEmp(emp)
+    }, [emp])
+    const handleChange = (event) => {
         const {name, value} = event.target;
         setNewEmp(prev => (
             {...prev, [name]: value}
         ))
     }
-    const handleSubmit = (event)=>{
+    const handleSubmit = (event) => {
         event.preventDefault();
-        
-        dispatch({type: "update", payload: newEmp})
+        dispatch(update(newEmp))
     }
-  return (
-  <>
-    <form 
-      onSubmit={handleSubmit}
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        gap: '18px'
-      }}
-    >
+    return (
+        <Form onSubmit={handleSubmit}>
+            <InputGroup>
+                <Label>이름</Label>
+                <Input
+                    type="text"
+                    name="name"
+                    value={newEmp.name}
+                    onChange={handleChange}
+                    placeholder='이름'
+                />
+            </InputGroup>
+            <InputGroup>
+                <Label>이메일</Label>
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px'
-        }}
-      >
-        <label
-          style={{
-            fontWeight: 'bold',
-            color: '#333'
-          }}
-        >
-          이름
-        </label>
+                <Input
+                    type="email"
+                    name="email"
+                    value={newEmp.email}
+                    onChange={handleChange}
+                    placeholder='이메일'
+                />
 
-        <input
-          type="text"
-          name="name"
-          value={newEmp.name}
-          onChange={handleChange}
-          placeholder='이름'
-          style={{
-            padding: '12px',
-            borderRadius: '10px',
-            border: '1px solid #ccc',
-            outline: 'none',
-            fontSize: '15px'
-          }}
-        />
-      </div>
+            </InputGroup>
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px'
-        }}
-      >
-        <label
-          style={{
-            fontWeight: 'bold',
-            color: '#333'
-          }}
-        >
-          이메일
-        </label>
+            <InputGroup>
 
-        <input
-          type="email"
-          name="email"
-          value={newEmp.email}
-          onChange={handleChange}
-          placeholder='이메일'
-          style={{
-            padding: '12px',
-            borderRadius: '10px',
-            border: '1px solid #ccc',
-            outline: 'none',
-            fontSize: '15px'
-          }}
-        />
-      </div>
+                <Label>직업</Label>
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px'
-        }}
-      >
-        <label
-          style={{
-            fontWeight: 'bold',
-            color: '#333'
-          }}
-        >
-          직업
-        </label>
+                <Input
+                    type="text"
+                    name="job"
+                    value={newEmp.job}
+                    onChange={handleChange}
+                    placeholder='직업'
+                />
 
-        <input
-          type="text"
-          name="job"
-          value={newEmp.job}
-          onChange={handleChange}
-          placeholder='직업'
-          style={{
-            padding: '12px',
-            borderRadius: '10px',
-            border: '1px solid #ccc',
-            outline: 'none',
-            fontSize: '15px'
-          }}
-        />
-      </div>
+            </InputGroup>
 
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '8px'
-        }}
-      >
-        <label
-          style={{
-            fontWeight: 'bold',
-            color: '#333'
-          }}
-        >
-          급여
-        </label>
+            <InputGroup>
 
-        <input
-          type="number"
-          name="pay"
-          value={newEmp.pay}
-          onChange={handleChange}
-          placeholder='급여'
-          style={{
-            padding: '12px',
-            borderRadius: '10px',
-            border: '1px solid #ccc',
-            outline: 'none',
-            fontSize: '15px'
-          }}
-        />
-      </div>
+                <Label>급여</Label>
 
-      <button
-        style={{
-          padding: '14px',
-          border: 'none',
-          borderRadius: '10px',
-          backgroundColor: '#2563eb',
-          color: 'white',
-          fontSize: '16px',
-          fontWeight: 'bold',
-          cursor: 'pointer'
-        }}
-      >
-        수정
-      </button>
+                <Input
+                    type="number"
+                    name="pay"
+                    value={newEmp.pay}
+                    onChange={handleChange}
+                    placeholder='급여'
+                />
 
-    </form>
-  </>
-)
+            </InputGroup>
+
+            <SubmitButton>
+                수정
+            </SubmitButton>
+
+        </Form>
+    )
 }
 
 export default EmployeeUpdate
+
+
+const Form = styled.form`
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+`
+
+const InputGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+`
+
+const Label = styled.label`
+  font-weight: bold;
+  color: #334155;
+`
+
+const Input = styled.input`
+  width: 100%;
+  padding: 14px;
+  border-radius: 10px;
+  border: 1px solid #cbd5e1;
+  outline: none;
+  font-size: 15px;
+
+  &:focus{
+    border-color: #3b82f6;
+  }
+`
+
+const SubmitButton = styled.button`
+  border: none;
+  background: #f59e0b;
+  color: white;
+  padding: 14px;
+  border-radius: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+
+  &:hover{
+    opacity: 0.85;
+  }
+`

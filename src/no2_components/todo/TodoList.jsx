@@ -1,32 +1,32 @@
+// TodoList.jsx
+
 import React from 'react'
 import TodoListChild from './TodoListChild'
 import styled from 'styled-components'
+import { useSelector } from 'react-redux';
+// import { TodoContext } from '../../no0_context/TodoContext'
 
-const TodoList = ({todoList, setState}) => {
+const TodoList = () => {
+  const {todoList} = useSelector(state=>state.todo);
   return (
-    <ListBox>
-
-        {todoList?.map(item => (
-
-            <TodoListChild
-                key={item.id}
-                item={item}
-                setState={setState}
-            />
-
-        ))}
-
-    </ListBox>
+    <Container>
+      {
+        todoList?.map(item => (
+          <TodoListChild
+            key={item.id}
+            item={item}
+          />
+        ))
+      }
+    </Container>
   )
 }
 
 export default TodoList
 
-const ListBox = styled.div`
+const Container = styled.div`
   display: flex;
   flex-direction: column;
 
-  gap: 12px;
-
-  margin-top: 20px;
+  gap: 14px;
 `

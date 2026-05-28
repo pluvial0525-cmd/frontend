@@ -1,24 +1,22 @@
 import React, { createContext, useReducer } from 'react'
 
-export const UserContext = createContext();
+export const UserContext = createContext(); 
 
 const initialUsers = [
-  { id: 1, username: "john", password: "1111" },
-  { id: 2, username: "peter", password: "1111" },
-  { id: 3, username: "susan", password: "1111" },
-  { id: 4, username: "sue", password: "1111" },
+  {id: 1, username: "john", password: "1111"},
+  {id: 2, username: "peter", password: "1111"},
+  {id: 3, username: "susan", password: "1111"},
+  {id: 4, username: "sue", password: "1111"},
 ]
-
-const initialState = {
-  users: initialUsers,
-  username: '',
-  isLogin: false 
+const initalState = {
+    users: initialUsers,
+    username: '',
+    isLogin: false
 }
-
-const reducer = (state, action) => {
-  switch (action.type) {
+const reducer = (state, action)=>{
+  switch(action.type){
     case "login":
-      return {
+      return{
         ...state,
         username: action.payload.username,
         isLogin: true
@@ -26,27 +24,34 @@ const reducer = (state, action) => {
     case "register":
       return {
         ...state,
-        users: [...state.users, action.payload]
+        users: [
+          ...state.users,
+          {
+            id: action.payload.id,
+            username: action.payload.user.username,
+            password: action.payload.user.password
+          }
+        ]
       }
     case "logout":
       return {
         ...state,
-        isLogin: false, 
+        isLogin: false,
         username: ""
       }
     default:
       return state;
   }
+
 }
 
-const UserProvider = ({ children }) => {
-  const [state, dispatch] = useReducer(reducer, initialState);
-  
+const UserProvider = ({children}) => {
+    const [state, dispatch] = useReducer(reducer, initalState);
   return (
-    <UserContext.Provider value={{ state, dispatch }}>
+    <UserContext.Provider value={{state, dispatch}}>
       {children}
     </UserContext.Provider>
   )
 }
 
-export default UserProvider;
+export default UserProvider

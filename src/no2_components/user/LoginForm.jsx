@@ -1,164 +1,247 @@
-import React, { useContext, useState } from 'react'
+import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
-import styled from 'styled-components'; 
-import { UserContext } from '../../no0_context/UserContext';
+import styled from 'styled-components';
+// import { UserContext } from '../../no0_context/UserContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { login } from '../../no3_store/slices/userSlice';
 
-const initialLoginFormState = {
-    username: "", password: ""
+const initialState = {
+  username: "",
+  password: ""
 }
-
 const LoginForm = () => {
-    const { state, dispatch } = useContext(UserContext);
-    const [signInData, setSignInData] = useState(initialLoginFormState);
-    const navigate = useNavigate();
+  const {users} = useSelector(state=>state.user)
+  const dispatch = useDispatch();
+ 
+  const [user, setUser] = useState(initialState);
+  const navigate = useNavigate();
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setSignInData(prev => ({
-            ...prev, [name]: value
-        }))
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setUser(prev => ({
+      ...prev,
+      [name]: value
+    }))
+  }
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    const loginUser = users.filter(item => (
+      item.username === user.username &&
+      item.password === user.password
+    ))[0]
+
+    if (loginUser) {
+      alert("로그인 성공")
+      dispatch(login(loginUser.username))
+      navigate("/")
+    } else {
+      alert("아이디 또는 비밀번호가 올바르지 않습니다.")
     }
+  }
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        
-        // 💡 예외 처리 안전망 적용 및 데이터 검증 대상 타겟 확보
-        const currentUsers = state?.users || [];
-        
-        // 고도화된 단일 객체 동치 검증 기법 적용 (.find)
-        const loginUser = currentUsers.find(item => 
-            item.username === signInData.username.trim() && 
-            item.password === signInData.password.trim()
-        );
+  return (
+    <Container>
+      <Form onSubmit={handleSubmit}>
 
-        if (loginUser) {
-            alert("로그인 성공!");
-            dispatch({ type: "login", payload: loginUser });
-            navigate("/");
-        } else {
-            alert("사용자 정보가 올바르지 않습니다.");
-        }
-    }
+        <Logo>MySystem</Logo>
 
-    return (
-        <FormContainer onSubmit={handleSubmit}>
-            <Card>
-                <Title>로그인</Title>
-                
-                <InputGroup>
-                    <Input
-                        type="text"
-                        name="username"
-                        value={signInData.username}
-                        onChange={handleChange}
-                        placeholder='사용자 이름'
-                        required
-                    />
-                    <Input
-                        type="password"
-                        name="password"
-                        value={signInData.password}
-                        onChange={handleChange}
-                        placeholder='비밀번호'
-                        required
-                    />
-                </InputGroup>
+        <Title>로그인</Title>
 
-                <ButtonGroup>
-                    <LoginButton type="submit">
-                        로그인
-                    </LoginButton>
-                    <RegisterButton type="button" onClick={() => navigate("/register")}>
-                        아직 회원이 아니신가요? 회원가입
-                    </RegisterButton>
-                </ButtonGroup>
-            </Card>
-        </FormContainer>
-    )
+        <Description>
+          계정에 로그인하여 서비스를 이용하세요.
+        </Description>
+
+        <InputGroup>
+          <Label>아이디</Label>
+
+          <Input
+            type="text"
+            name="username"
+            value={user.username}
+            onChange={handleChange}
+            placeholder="아이디 입력"
+          />
+        </InputGroup>
+
+        <InputGroup>
+          <Label>비밀번호</Label>
+
+          <Input
+            type="password"
+            name="password"
+            value={user.password}
+            onChange={handleChange}
+            placeholder="비밀번호 입력"
+          />
+        </InputGroup>
+
+        <LoginButton>
+          로그인
+        </LoginButton>
+
+        <Divider />
+
+        <RegisterButton
+          type="button"
+          onClick={() => navigate("/register")}
+        >
+          회원가입
+        </RegisterButton>
+
+      </Form>
+    </Container>
+  )
 }
 
 export default LoginForm;
 
-/* ✨ Styled Components */
-const FormContainer = styled.form`
-    width: 100%;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: #f8fafc; 
+
+const Container = styled.div`
+  width: 100%;
+  min-height: 100vh;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background: linear-gradient(
+    135deg,
+    #e0f2fe,
+    #f8fafc,
+    #dbeafe
+  );
+
+  padding: 20px;
 `
-const Card = styled.div`
-    width: 420px;
-    background: white;
-    padding: 48px 40px;
-    border-radius: 20px; 
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-    display: flex;
-    flex-direction: column;
-    border: 1px solid #f1f5f9;
+
+const Form = styled.form`
+  width: 100%;
+  max-width: 420px;
+
+  background: white;
+
+  padding: 48px 40px;
+
+  border-radius: 24px;
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,0.08),
+    0 4px 10px rgba(0,0,0,0.04);
+
+  display: flex;
+  flex-direction: column;
 `
+
+const Logo = styled.div`
+  font-size: 30px;
+  font-weight: 800;
+  color: #2563eb;
+
+  text-align: center;
+
+  margin-bottom: 12px;
+`
+
 const Title = styled.h2`
-    text-align: center;
-    margin-bottom: 36px;
-    color: #0f172a; 
-    font-size: 30px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
+  text-align: center;
+
+  font-size: 28px;
+  color: #0f172a;
+
+  margin-bottom: 10px;
 `
+
+const Description = styled.p`
+  text-align: center;
+
+  color: #64748b;
+  font-size: 15px;
+
+  margin-bottom: 32px;
+`
+
 const InputGroup = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 16px; 
-    margin-bottom: 28px;
+  display: flex;
+  flex-direction: column;
+
+  margin-bottom: 20px;
 `
+
+const Label = styled.label`
+  font-size: 14px;
+  font-weight: 600;
+
+  color: #334155;
+
+  margin-bottom: 8px;
+`
+
 const Input = styled.input`
-    width: 100%;
-    padding: 14px 16px; 
-    border: 1px solid #cbd5e1; 
-    border-radius: 12px; 
-    font-size: 15px;
-    outline: none;
-    background-color: #f8fafc;
-    transition: all 0.2s ease-in-out;
-    &::placeholder { color: #94a3b8; }
-    &:focus {
-        background-color: #ffffff;
-        border-color: #2563eb;
-        box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12); 
-    }
+  width: 100%;
+
+  padding: 14px 16px;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+
+  font-size: 15px;
+
+  outline: none;
+
+  transition: 0.2s;
+
+  &:focus{
+    border-color: #3b82f6;
+
+    box-shadow:
+      0 0 0 4px rgba(59,130,246,0.15);
+  }
 `
-const ButtonGroup = styled.div`
-    display: flex;
-    flex-direction: column;
-    gap: 12px; 
-`
+
 const BaseButton = styled.button`
-    width: 100%; 
-    border: none;
-    padding: 14px;
-    border-radius: 12px;
-    font-size: 15px;
-    font-weight: 600; 
-    cursor: pointer;
-    transition: all 0.2s ease-in-out;
+  width: 100%;
+
+  border: none;
+  border-radius: 12px;
+
+  padding: 14px;
+
+  font-size: 15px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  transition: 0.2s;
 `
+
 const LoginButton = styled(BaseButton)`
-    background: #2563eb; 
-    color: #ffffff; 
-    &:hover {
-        background: #1d4ed8;
-        transform: translateY(-1px); 
-    }
-    &:active { transform: translateY(0); }
+  background: #2563eb;
+  color: white;
+
+  margin-top: 8px;
+
+  &:hover{
+    background: #1d4ed8;
+    transform: translateY(-1px);
+  }
 `
+
+const Divider = styled.div`
+  width: 100%;
+  height: 1px;
+
+  background: #e2e8f0;
+
+  margin: 24px 0;
+`
+
 const RegisterButton = styled(BaseButton)`
-    background: transparent;
-    color: #64748b; 
-    font-size: 14px;
-    font-weight: 500;
-    &:hover {
-        color: #2563eb;
-        background: #f1f5f9;
-    }
+  background: #eff6ff;
+  color: #2563eb;
+
+  &:hover{
+    background: #dbeafe;
+  }
 `

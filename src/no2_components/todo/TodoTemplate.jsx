@@ -1,22 +1,15 @@
+// TodoTemplate.jsx
+
 import React from 'react'
 import styled from 'styled-components'
 
-const TodoTemplate = ({children}) => {
+const TodoTemplate = ({ children }) => {
   return (
     <Container>
-
-      <TodoBox>
-
-        <Title>
-          일정관리
-        </Title>
-
-        <ContentBox>
-          {children}
-        </ContentBox>
-
-      </TodoBox>
-
+      <Title>📋 일정 관리</Title>
+      <Content>
+        {children}
+      </Content>
     </Container>
   )
 }
@@ -24,20 +17,11 @@ const TodoTemplate = ({children}) => {
 export default TodoTemplate
 
 const Container = styled.div`
-  width: 100%;
-  min-height: 100vh;
+  width: 500px;
 
-  background: #f4f6f8;
+  margin: 60px auto;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`
-
-const TodoBox = styled.div`
-  width: 420px;
-
-  background: white;
+  background: #ffffff;
 
   border-radius: 20px;
 
@@ -46,20 +30,17 @@ const TodoBox = styled.div`
   box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 `
 
-const Title = styled.div`
-  font-size: 28px;
-  font-weight: bold;
-
+const Title = styled.h1`
   text-align: center;
 
-  margin-bottom: 25px;
+  margin-bottom: 30px;
 
-  color: #333;
+  color: #222;
 `
 
-const ContentBox = styled.div`
+const Content = styled.div`
   display: flex;
   flex-direction: column;
 
-  gap: 15px;
+  gap: 20px;
 `

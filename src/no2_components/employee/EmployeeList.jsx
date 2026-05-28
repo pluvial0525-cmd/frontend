@@ -1,69 +1,57 @@
-import React, { useContext } from 'react'
-import { EmployeeContext } from '../../no0_context/EmployeeContext'
+// EmployeeList.jsx
+import React from 'react'
+import styled from 'styled-components';
+// import { EmployeeContext } from '../../no0_context/EmployeeContext';
+import { useDispatch, useSelector } from 'react-redux';
+import { select } from '../../no3_store/slices/employeeSlice';
 
 const EmployeeList = () => {
-    const {state, dispatch} = useContext(EmployeeContext)
-    const {empTable, selectedId} = state;
-    const handleClick = (id) => {
-        dispatch({type: "select", payload: id})
-    }
+  const {empTable, selectedId} =useSelector(state=>state.emp);
+  const dispatch = useDispatch();
+  return (
+    <Container>
+      {/* {console.log(empTable)} */}
+      {
+        empTable?.map(item => (
+          <EmployeeButton
+            key={item.id}
+            $active={selectedId === item.id}
+            onClick={() => dispatch(select(item.id))}
+          >
+            {item.name}
+          </EmployeeButton>
+        ))
+      }
 
-    return (
-
-        <div
-            style={{
-                display: 'flex',
-                gap: '16px',
-                marginTop: '25px',
-                flexWrap: 'wrap'
-            }}
-        >
-            {
-                empTable?.map(item => (
-                    <button
-                        key={item.id}
-                        onClick={() => handleClick(item.id)}
-                        style={{
-                            padding: '14px 22px',
-                            border:
-                                selectedId === item.id
-                                ? '2px solid #0f172a'
-                                : '2px solid transparent',
-
-                            borderRadius: '18px',
-                            background:
-                                selectedId === item.id
-                                ? 'linear-gradient(135deg, #111827, #374151)'
-                                : 'white',
-
-                            color:
-                                selectedId === item.id
-                                ? 'white'
-                                : '#111827',
-
-                            fontWeight: '600',
-                            fontSize: '15px',
-                            cursor: 'pointer',
-
-                            boxShadow:
-                                selectedId === item.id
-                                ? '0 10px 20px rgba(0,0,0,0.2)'
-                                : '0 4px 10px rgba(0,0,0,0.08)',
-
-                            transform:
-                                selectedId === item.id
-                                ? 'translateY(-3px)'
-                                : 'translateY(0)',
-
-                            transition: 'all 0.25s ease'
-                        }}
-                    >
-                        👤 {item.name}
-                    </button>
-                ))
-            }
-        </div>
-    )
+    </Container>
+  )
 }
 
 export default EmployeeList
+
+
+const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+`
+
+const EmployeeButton = styled.button`
+  border: none;
+  padding: 14px;
+  border-radius: 10px;
+
+  background: ${({$active}) =>
+    $active ? "#3b82f6" : "#e2e8f0"};
+
+  color: ${({$active}) =>
+    $active ? "white" : "#1e293b"};
+
+  cursor: pointer;
+  transition: 0.2s;
+  font-weight: bold;
+
+  &:hover{
+    opacity: 0.85;
+  }
+`

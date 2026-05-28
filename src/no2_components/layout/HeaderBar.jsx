@@ -1,130 +1,193 @@
 // HeaderBar.jsx
-import React, { useContext } from 'react';
-import styled from 'styled-components';
-import { useNavigate } from 'react-router-dom';
-// 💡 꼭 본인의 UserContext 경로에 맞게 가져오세요!
-import { UserContext } from '../../no0_context/UserContext'; 
 
-const HeaderBar = ({ setOpen }) => {
+import React, { useContext } from 'react'
+import styled from 'styled-components'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+// import { UserContext } from '../../no0_context/UserContext'
+import { logout } from '../../no3_store/slices/userSlice'
+
+const HeaderBar = () => {
+  const {isLogin, username} = useSelector(state=>state.user)
+  const dispatch = useDispatch();
+  // const {isLogin} = state;
   const navigate = useNavigate();
-  
-  const { state, dispatch } = useContext(UserContext);
-  const { isLogin, username } = state;
 
   const handleLogout = () => {
-    if (window.confirm("로그아웃 하시겠습니까?")) {
-      dispatch({ type: "logout" });
-      navigate("/"); // 로그아웃 후 메인으로 이동
-    }
-  };
+      dispatch(logout())
+      alert("로그아웃 되었습니다.")
+      navigate("/login")
+  }
 
   return (
-    <HeaderContainer>
-      <MenuButton onClick={() => setOpen(prev => !prev)}>
-        ☰
-      </MenuButton>
+    <Container>
+
       <Logo onClick={() => navigate("/")}>
-        🚀 MyDashboard
+        My시스템
       </Logo>
 
-      <NavLinks>
-        {/* 💡 에러 해결 지점: 전역 상태인 isLogin 값에 따라 버튼을 스위칭합니다. */}
-        {isLogin ? (
+      <Menu>
+
+        {isLogin ?
+
           <UserSection>
-            <WelcomeMessage>✨ <strong>{username}</strong>님 환영합니다</WelcomeMessage>
-            <AuthButton onClick={handleLogout}>로그아웃</AuthButton>
+
+            <UserName>
+              👋 {username} 님
+            </UserName>
+
+            <LogoutButton onClick={handleLogout}>
+              로그아웃
+            </LogoutButton>
+
           </UserSection>
-        ) : (
+
+          :
+
           <ButtonGroup>
-            <AuthButton onClick={() => navigate("/login")}>로그인</AuthButton>
-            <AuthButton onClick={() => navigate("/register")} $primary>회원가입</AuthButton>
+
+            <LoginButton onClick={() => navigate("/login")}>
+              로그인
+            </LoginButton>
+
+            <RegisterButton onClick={() => navigate("/register")}>
+              회원가입
+            </RegisterButton>
+
           </ButtonGroup>
-        )}
-      </NavLinks>
-    </HeaderContainer>
-  );
-};
+        }
 
-export default HeaderBar;
+      </Menu>
 
-// --- Styled Components 영역 (프로젝트 스타일에 맞게 가공해 쓰세요!) ---
+    </Container>
+  )
+}
 
-const HeaderContainer = styled.header`
-  position: fixed;
-  top: 0;
-  left: 0;
+export default HeaderBar
+
+
+const Container = styled.header`
+
   width: 100%;
   height: 70px;
-  background-color: #ffffff;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 24px;
-  z-index: 1000;
-  box-sizing: border-box;
-`
 
-const MenuButton = styled.button`
-  background: none;
-  border: none;
-  font-size: 24px;
-  cursor: pointer;
-  color: #334155;
-  padding: 8px;
-  border-radius: 8px;
-  
-  &:hover {
-    background-color: #f1f5f9;
+  background: #1e293b;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 32px;
+
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+
+  position: sticky;
+  top: 0;
+
+  z-index: 1000;
+
+  @media (max-width: 768px){
+    display: none;
   }
-`
+`;
 
 const Logo = styled.div`
-  font-size: 20px;
-  font-weight: bold;
-  color: #0f172a;
-  cursor: pointer;
-  margin-left: 12px;
-  flex: 1;
-`
 
-const NavLinks = styled.div`
+  font-size: 24px;
+  font-weight: bold;
+
+  color: #4dabf7;
+
+  cursor: pointer;
+  transition: 0.2s;
+  &:hover{
+    opacity: 0.8;
+  }
+`;
+
+const Menu = styled.div`
+
   display: flex;
   align-items: center;
-`
+`;
 
 const UserSection = styled.div`
+
   display: flex;
   align-items: center;
-  gap: 16px;
-`
 
-const WelcomeMessage = styled.span`
-  font-size: 14px;
-  color: #475569;
-  strong {
-    color: #4f46e5;
-  }
-`
+  gap: 14px;
+`;
+
+const UserName = styled.div`
+
+  color: white;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  background: rgba(255,255,255,0.08);
+
+  padding: 10px 14px;
+
+  border-radius: 10px;
+`;
 
 const ButtonGroup = styled.div`
-  display: flex;
-  gap: 10px;
-`
 
-const AuthButton = styled.button`
-  border: ${props => props.$primary ? 'none' : '1px solid #cbd5e1'};
-  background-color: ${props => props.$primary ? '#4f46e5' : '#ffffff'};
-  color: ${props => props.$primary ? '#ffffff' : '#334155'};
-  padding: 8px 16px;
-  border-radius: 8px;
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+`;
+
+const BaseButton = styled.button`
+
+  border: none;
+  outline: none;
+
+  padding: 10px 16px;
+
+  border-radius: 10px;
+
+  cursor: pointer;
+
   font-size: 14px;
   font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
 
-  &:hover {
-    background-color: ${props => props.$primary ? '#4338ca' : '#f8fafc'};
-    border-color: ${props => props.$primary ? '#4338ca' : '#94a3b8'};
+  transition: 0.2s;
+
+  &:hover{
+    transform: translateY(-1px);
   }
-`
+`;
+
+const LoginButton = styled(BaseButton)`
+
+  background: white;
+  color: #1e293b;
+
+  &:hover{
+    background: #f1f5f9;
+  }
+`;
+
+const RegisterButton = styled(BaseButton)`
+
+  background: #3b82f6;
+  color: white;
+
+  &:hover{
+    background: #2563eb;
+  }
+`;
+
+const LogoutButton = styled(BaseButton)`
+
+  background: #ef4444;
+  color: white;
+
+  &:hover{
+    background: #dc2626;
+  }
+`;

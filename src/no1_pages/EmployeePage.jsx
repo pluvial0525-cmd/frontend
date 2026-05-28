@@ -7,36 +7,34 @@ import EmployeeList from '../no2_components/employee/EmployeeList'
 import EmployeeTable from '../no2_components/employee/EmployeeTable'
 import EmployeeRegister from '../no2_components/employee/EmployeeRegister'
 import EmployeeUpdate from '../no2_components/employee/EmployeeUpdate'
-import { EmployeeContext } from '../no0_context/EmployeeContext';
+import { useDispatch, useSelector } from 'react-redux';
+// import { EmployeeContext } from '../no0_context/EmployeeContext';
+import { setEmp, remove, setMode} from '../no3_store/slices/employeeSlice';
 
 const EmployeePage = () => {
-  const { state, dispatch } = useContext(EmployeeContext);
-  const { selectedId, empTable, emp, mode } = state;
+  const {selectedId, mode, empTable} = useSelector(state=>state.emp);
+  const dispatch = useDispatch();
 
-  // 💡 필터(filter) 함수 형식을 그대로 유지하고 화살표(=>) 오타만 수정했습니다.
-  useEffect(() => {
-    if (selectedId) {
-      dispatch({
-        type: "set_emp", 
-        payload: empTable.filter(item => item.id === selectedId)[0]
-      });
-    }
-  }, [selectedId, empTable, dispatch]);
+  useEffect(()=>{
+    const newEmp = empTable.filter(item => item.id === selectedId)[0]
+    selectedId &&
+    dispatch(setEmp(newEmp))
+  }, [selectedId, empTable])
 
   const handleDelete = () => {
-    if (!selectedId) {
+
+    if(!selectedId) {
       alert("삭제할 데이터를 선택하세요");
       return;
     }
-    dispatch({ type: "delete" });
-    dispatch({ type: "mode", payload: "" });
-  };
+    dispatch(remove())
+  }
 
   return (
     <Container>
 
       <Title>
-        고용인 정보
+        Employee Management
       </Title>
 
       <Content>
@@ -47,8 +45,7 @@ const EmployeePage = () => {
             <SectionTitle>
               직원 목록
             </SectionTitle>
-
-            <EmployeeList />
+            <EmployeeList/>
           </Card>
 
         </LeftSection>
@@ -60,26 +57,26 @@ const EmployeePage = () => {
               직원 정보
             </SectionTitle>
 
-            <EmployeeTable />
+            <EmployeeTable/>
           </Card>
 
           <Card>
 
             <ButtonGroup>
               <ActionButton
-                onClick={() => dispatch({ type: "mode", payload: "register" })}
+                onClick={() => dispatch(setMode("register"))}
               >
                 등록
               </ActionButton>
 
               <ActionButton
-                onClick={() => dispatch({ type: "mode", payload: "update" })}
+                onClick={() => dispatch(setMode("update"))}
               >
                 수정
               </ActionButton>
 
               <DeleteButton
-                onClick={() => dispatch({ type: "mode", payload: "delete" })}
+                onClick={() => dispatch(setMode("delete"))}
               >
                 삭제
               </DeleteButton>
@@ -88,27 +85,26 @@ const EmployeePage = () => {
             {
               mode === "register" ?
 
-                <EmployeeRegister />
-                :
+              <EmployeeRegister/>
+              :
+              mode === "update" ?
+              <EmployeeUpdate/>
+              :
+              mode === "delete" ?
 
-                mode === "update" ?
+              <DeleteBox>
+                <p>위 데이터를 삭제하시겠습니까?</p>
 
-                  <EmployeeUpdate
-                    emp={emp} />
-                  :
-                  mode === "delete" ?
+                <DeleteConfirmButton
+                  onClick={handleDelete}
+                >
+                  삭제 확인
+                </DeleteConfirmButton>
+              </DeleteBox>
 
-                    <DeleteBox>
-                      <p>위 데이터를 삭제하시겠습니까?</p>
+              :
 
-                      <DeleteConfirmButton
-                        onClick={handleDelete}
-                      >
-                        삭제 확인
-                      </DeleteConfirmButton>
-                    </DeleteBox>
-                    :
-                    null
+              null
             }
 
           </Card>
@@ -123,8 +119,6 @@ const EmployeePage = () => {
 
 export default EmployeePage
 
-
-// --- Styled Components 영역 ---
 
 const Container = styled.div`
   width: 100%;

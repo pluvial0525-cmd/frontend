@@ -4,7 +4,6 @@ import RegisterForm from '../../no2_components/user/RegisterForm'
 const RegisterPage = () => {
   return (
     <RegisterForm/>
-
   )
 }
 
